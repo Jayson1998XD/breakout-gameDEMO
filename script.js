@@ -9,6 +9,9 @@ const ctx =canvas.getContext("2d");
 
 let score = 0;
 
+const brickRowCount = 9;
+const brickColumnCount = 5;
+
 //创建球
 
 const ball = {
@@ -53,6 +56,43 @@ function drawTable() {
 }
 
 
+//创建单个方块
+const paddle = {
+  w:70,
+  h:20,
+  padding:10,
+  offsetX:45,
+  offsetY:60,
+  visible:true
+}
+
+//绘制每个方块的坐标
+const bricks = [];
+for(let i = 0; i < brickRowCount ; i++){
+  bricks[i] = [];
+  for(let j = 0; j < brickColumnCount; j++){
+    const x =i  * (paddle.w + paddle.padding) +paddle.offsetX;
+    const y =j * (paddle.h + paddle.padding) +paddle.offsetY;
+    bricks[i][j] = { x, y, ...paddle };
+  }
+}
+
+console.log(bricks);
+
+//绘制所以方块
+
+function drawBricks() {
+  bricks.forEach(column => {
+     column.forEach(bricks => {
+       ctx.beginPath();
+       ctx.rect(bricks.x,bricks.y, bricks.w , bricks.h);
+       ctx.fillStyle = bricks.visible ? "#333" : "transparent";
+       ctx.fill();
+       ctx.closePath();
+     });
+  });
+}
+
 //绘制得分
 function scores() {
     ctx.font= "20px Arial";
@@ -64,6 +104,7 @@ function scores() {
 function draw(){
   drawBell();
   drawTable();
+  drawBricks();
   scores();
 }
 
