@@ -78,7 +78,7 @@ for(let i = 0; i < brickRowCount ; i++){
 }
 
 
-//绘制所以方块
+//绘制所有方块
 
 function drawBricks() {
   bricks.forEach(column => {
