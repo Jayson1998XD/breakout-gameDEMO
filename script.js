@@ -29,8 +29,8 @@ const ball = {
  const table = {
    x:canvas.width/2 -40,
    y:canvas.height -20,
-   w:80,
-   h:10,
+   w:200,
+   h:15,
    speed:8,
    dx:0
  };
@@ -116,6 +116,71 @@ function movePaddle() {
 }
 
 
+// 移动撞击球动画
+function moveBall() {
+  ball.x += ball.dx;
+  ball.y += ball.dy;
+
+  // 撞击左右侧界面
+  if (ball.x + ball.size > canvas.width || ball.x - ball.size < 0) {
+    ball.dx *= -1; // ball.dx = ball.dx * -1 撞击后反弹
+  }
+
+  // 撞击上下边界
+  if (ball.y + ball.size > canvas.height || ball.y - ball.size < 0) {
+    ball.dy *= -1;
+  }
+
+  // 撞击挡板
+  if (
+    ball.x - ball.size > table.x &&
+    ball.x + ball.size < table.x + table.w &&
+    ball.y + ball.size > table.y
+  ) {
+    ball.dy = -ball.speed;
+  }
+
+  // 撞击砖块
+  bricks.forEach(column => {
+    column.forEach(brick => {
+      if (brick.visible) {
+        if (
+          ball.x - ball.size > brick.x && // 撞击砖块左侧
+          ball.x + ball.size < brick.x + brick.w && // 撞击砖块右侧
+          ball.y + ball.size > brick.y && // 撞击砖块顶部
+          ball.y - ball.size < brick.y + brick.h // 撞击砖块底部
+        ) {
+          ball.dy *= -1;
+          brick.visible = false;
+
+          increaseSource();
+        }
+      }
+    });
+  });
+
+  // 挡板没有接住球体
+  if (ball.y + ball.size > canvas.height) {
+    showAllBricks();
+    score = 0;
+  }
+}
+
+// 增加得分
+function increaseSource() {
+  score++;
+  if (score % (brickColumnCount * brickRowCount) === 0) {
+    showAllBricks();
+  }
+}
+
+//再次显示所有砖块
+function showAllBricks() {
+  bricks.forEach(column => {
+    column.forEach(brick => (brick.visible = true));
+  });
+}
+
 //绘制函数
 function draw(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);//移动挡板时保持宽度
@@ -131,7 +196,7 @@ function draw(){
 function update() {
   // 动画函数
   movePaddle();
-  // moveBall();
+  moveBall();
   // 所有的绘制函数
   draw();
 
